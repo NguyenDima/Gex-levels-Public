@@ -1,0 +1,30 @@
+name: 5-Minute GEX Bot + TradingView Cloud Sync
+
+on:
+  workflow_dispatch:
+
+jobs:
+  run-gex-bot:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install Dependencies & Headless Browser
+        run: |
+          pip install yfinance pandas numpy scipy requests playwright
+          playwright install chromium --with-deps
+
+      - name: Run GEX Bot & Auto-Update TradingView Chart
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          TV_SESSIONID: ${{ secrets.TV_SESSIONID }}
+          TV_SESSIONID_SIGN: ${{ secrets.TV_SESSIONID_SIGN }}
+          TV_CHART_URL: ${{ secrets.TV_CHART_URL }}
+        run: python gex_live.py
